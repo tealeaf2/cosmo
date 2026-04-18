@@ -228,6 +228,7 @@ const AssistantMessage: FC = () => {
           }}
         </MessagePrimitive.Parts>
         <MessageError />
+        
       </div>
 
       <div className="aui-assistant-message-footer mt-1 ml-2 flex">
