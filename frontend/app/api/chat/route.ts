@@ -7,6 +7,8 @@ import {
   type UIMessage,
 } from "ai";
 
+import { system_prompt } from "./prompt";
+
 export async function POST(req: Request) {
   const {
     messages,
@@ -21,7 +23,7 @@ export async function POST(req: Request) {
   const result = streamText({
     model: google("gemini-3-flash-preview"),
     messages: await convertToModelMessages(messages),
-    system,
+    system: system_prompt,
     tools: {
       ...frontendTools(tools ?? {}),
     },
