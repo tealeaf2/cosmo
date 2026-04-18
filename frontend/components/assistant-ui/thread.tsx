@@ -1,6 +1,7 @@
 import {
   ComposerAddAttachment,
   ComposerAttachments,
+  ComposerAddNotes,
   UserMessageAttachments,
 } from "@/components/assistant-ui/attachment";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
@@ -36,6 +37,7 @@ import {
   PencilIcon,
   RefreshCwIcon,
   SquareIcon,
+  NotepadText
 } from "lucide-react";
 import HighlightToggle from "@/components/ui/highlight";
 import type { FC } from "react";
@@ -168,7 +170,10 @@ const Composer: FC = () => {
 const ComposerAction: FC = () => {
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
+      <div className="flex items-center gap-2">
       <ComposerAddAttachment />
+      <ComposerAddNotes />
+      </div>
       <AuiIf condition={(s) => !s.thread.isRunning}>
         <ComposerPrimitive.Send asChild>
           <TooltipIconButton

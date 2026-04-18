@@ -24,6 +24,8 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
+import { NotepadText } from 'lucide-react';
+
 
 const useFileSrc = (file: File | undefined) => {
   const [src, setSrc] = useState<string | undefined>(undefined);
@@ -218,5 +220,44 @@ export const ComposerAddAttachment: FC = () => {
         <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
       </TooltipIconButton>
     </ComposerPrimitive.AddAttachment>
+  );
+};
+
+interface ComposerAddNotesProps {
+  noteContent: string; // Pass the content from your Notepad state
+}
+
+export const ComposerAddNotes: FC<ComposerAddNotesProps> = ({ noteContent }) => {
+  const [Content, setNoteContent] = useState("")
+  // Access the composer's internal "add attachment" function to add the notepad content as a text file attachment
+  const aui = useAui();
+
+  const handleAttachNotepad = () => {
+    if (!noteContent) {
+      alert("Notepad is empty!");
+      return;
+    }
+    setNoteContent(noteContent);
+
+    const blob = new Blob([noteContent], { type: "text/plain" });
+
+    //Convert Blob to a standard File object
+    const file = new File([blob], "notes.txt", { type: "text/plain" });
+
+    aui.composer().addAttachment(file);
+  };
+
+  return (
+    <TooltipIconButton
+      tooltip="Attach Notepad"
+      side="bottom"
+      variant="ghost"
+      size="icon"
+      onClick={handleAttachNotepad} // Use onClick instead of asChild trigger
+      className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
+      aria-label="Attach Notepad"
+    >
+      <NotepadText className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
+    </TooltipIconButton>
   );
 };
