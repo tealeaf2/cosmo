@@ -14,20 +14,18 @@ import {
 } from "@/components/ui/sidebar";
 import { ThreadListSidebar } from "@/components/assistant-ui/threadlist-sidebar";
 import { Separator } from "@/components/ui/separator";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { MaterialsProvider, useMaterials } from "@/lib/materials-context";
 
-export const Assistant = () => {
+function AssistantContent() {
+  const { getEnabledMaterials } = useMaterials();
+  
   const runtime = useChatRuntime({
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     transport: new AssistantChatTransport({
       api: "/api/chat",
+      body: () => ({
+        materials: getEnabledMaterials(),
+      }),
     }),
   });
 
@@ -48,5 +46,13 @@ export const Assistant = () => {
         </div>
       </SidebarProvider>
     </AssistantRuntimeProvider>
+  );
+}
+
+export const Assistant = () => {
+  return (
+    <MaterialsProvider>
+      <AssistantContent />
+    </MaterialsProvider>
   );
 };

@@ -5,9 +5,9 @@ import {
   Link,
   Plus, 
   X,
-  Video,
+  PlayCircle,
   Upload,
-  Check,
+  SquareCheckBig,
   Square
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,52 +28,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useMaterials, type Material } from "@/lib/materials-context";
 
 type MaterialType = "pdf" | "website" | "video";
 
-interface Material {
-  id: string;
-  type: MaterialType;
-  name: string;
-  url?: string;
-  file?: File;
-  enabled: boolean;
-}
-
 export function MaterialsSection() {
-  const [materials, setMaterials] = useState<Material[]>([]);
+  const { materials, addMaterial, toggleMaterial, removeMaterial } = useMaterials();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MaterialType>("pdf");
-
-  const addMaterial = (material: Omit<Material, "id" | "enabled">) => {
-    const newMaterial: Material = {
-      ...material,
-      id: Date.now().toString(),
-      enabled: true,
-    };
-    setMaterials(prev => [...prev, newMaterial]);
-    setIsAddDialogOpen(false);
-  };
-
-  const toggleMaterial = (id: string) => {
-    setMaterials(prev => 
-      prev.map(material => 
-        material.id === id 
-          ? { ...material, enabled: !material.enabled }
-          : material
-      )
-    );
-  };
-
-  const removeMaterial = (id: string) => {
-    setMaterials(prev => prev.filter(material => material.id !== id));
-  };
 
   const getIcon = (type: MaterialType) => {
     switch (type) {
       case "pdf": return <FileText className="h-4 w-4" />;
       case "website": return <Link className="h-4 w-4" />;
-      case "video": return <Video className="h-4 w-4" />;
+      case "video": return <PlayCircle className="h-4 w-4" />;
     }
   };
 
@@ -97,7 +65,10 @@ export function MaterialsSection() {
             <MaterialsDialog 
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              onAdd={addMaterial}
+              onAdd={(material) => {
+                addMaterial(material);
+                setIsAddDialogOpen(false);
+              }}
             />
           </DialogContent>
         </Dialog>
@@ -110,7 +81,7 @@ export function MaterialsSection() {
             </div>
           ) : (
             materials.map((material) => (
-              <SidebarMenuItem key={material.id}>
+              <SidebarMenuItem key={material.id} title={material.url || material.name}>
                 <div className="flex items-center gap-2 p-2 rounded-md hover:bg-accent/50">
                   <Button
                     variant="ghost"
@@ -119,7 +90,7 @@ export function MaterialsSection() {
                     onClick={() => toggleMaterial(material.id)}
                   >
                     {material.enabled ? (
-                      <Check className="h-3 w-3" />
+                      <SquareCheckBig className="h-3 w-3" />
                     ) : (
                       <Square className="h-3 w-3" />
                     )}
@@ -127,7 +98,7 @@ export function MaterialsSection() {
                   
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     {getIcon(material.type)}
-                    <span className="text-sm truncate" title={material.name}>
+                    <span className="text-sm truncate">
                       {material.name}
                     </span>
                   </div>
@@ -156,28 +127,35 @@ interface MaterialsDialogProps {
   onAdd: (material: Omit<Material, "id" | "enabled">) => void;
 }
 
+const getBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProps) {
   const [url, setUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (activeTab === "pdf" && file) {
+      const dataUrl = await getBase64(file);
+      
       onAdd({
         type: "pdf",
         name: file.name,
-        file: file,
+        file: dataUrl,
       });
     } else if ((activeTab === "website" || activeTab === "video") && url) {
-      const name = activeTab === "video" 
-        ? `Video: ${url}` 
-        : new URL(url).hostname;
-      
       onAdd({
         type: activeTab,
-        name: name,
-        url: url,
+        name: url,
+        url: new URL(url).toString(),
       });
     }
     
@@ -219,7 +197,7 @@ function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProp
           }`}
           onClick={() => setActiveTab("video")}
         >
-          <Video className="h-4 w-4 inline mr-2" />
+          <PlayCircle className="h-4 w-4 inline mr-2" />
           Video
         </button>
       </div>
