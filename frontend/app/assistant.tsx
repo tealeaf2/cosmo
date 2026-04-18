@@ -52,7 +52,7 @@ function AssistantContent() {
 export const Assistant = () => {
   return (
     <MaterialsProvider>
-      <AssistantContent />
+        <AssistantContent />
     </MaterialsProvider>
   );
 };

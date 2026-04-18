@@ -8,7 +8,8 @@ import {
   PlayCircle,
   Upload,
   SquareCheckBig,
-  Square
+  Square,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -29,6 +30,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useMaterials, type Material } from "@/lib/materials-context";
+import { PDFPreviewModal } from "./pdf-preview-modal";
 
 type MaterialType = "pdf" | "website" | "video";
 
@@ -36,6 +38,8 @@ export function MaterialsSection() {
   const { materials, addMaterial, toggleMaterial, removeMaterial } = useMaterials();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MaterialType>("pdf");
+  const [previewPDF, setPreviewPDF] = useState<Material | null>(null);
+  const [isPDFPreviewOpen, setIsPDFPreviewOpen] = useState(false);
 
   const getIcon = (type: MaterialType) => {
     switch (type) {
@@ -45,13 +49,20 @@ export function MaterialsSection() {
     }
   };
 
+  const handlePDFPreview = (material: Material) => {
+    if (material.type === "pdf" && material.file) {
+      setPreviewPDF(material);
+      setIsPDFPreviewOpen(true);
+    }
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="flex items-center justify-between">
         <span>Materials</span>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:cursor-pointer">
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>
@@ -96,12 +107,31 @@ export function MaterialsSection() {
                     )}
                   </Button>
                   
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div 
+                    className={`flex items-center gap-2 flex-1 min-w-0 ${
+                      material.type === "pdf" ? "cursor-pointer hover:opacity-75 hover:bg-blue-50/50 rounded-sm px-1 transition-colors" : ""
+                    }`}
+                    onClick={() => material.type === "pdf" ? handlePDFPreview(material) : undefined}
+                    title={material.type === "pdf" ? "Click to preview PDF" : material.url || material.name}
+                  >
                     {getIcon(material.type)}
                     <span className="text-sm truncate">
                       {material.name}
                     </span>
                   </div>
+
+                  {/* Preview button for PDFs */}
+                  {material.type === "pdf" && material.file && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+                      onClick={() => handlePDFPreview(material)}
+                      title="Preview PDF"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  )}
                   
                   <Button
                     variant="ghost"
@@ -117,6 +147,13 @@ export function MaterialsSection() {
           )}
         </SidebarMenu>
       </SidebarGroupContent>
+
+      {/* PDF Preview Modal */}
+      <PDFPreviewModal 
+        pdf={previewPDF}
+        isOpen={isPDFPreviewOpen}
+        onOpenChange={setIsPDFPreviewOpen}
+      />
     </SidebarGroup>
   );
 }
@@ -202,7 +239,6 @@ function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProp
         </button>
       </div>
 
-      {/* Content */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {activeTab === "pdf" && (
           <div className="space-y-2">
