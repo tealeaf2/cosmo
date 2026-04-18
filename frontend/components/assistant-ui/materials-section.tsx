@@ -139,7 +139,6 @@ export function MaterialsSection() {
                     </span>
                   </div>
 
-                  {/* Preview button for PDFs */}
                   {material.type === "pdf" && material.file && (
                     <Button
                       variant="ghost"
@@ -152,7 +151,6 @@ export function MaterialsSection() {
                     </Button>
                   )}
 
-                  {/* Preview button for Code */}
                   {material.type === "code" && material.file && (
                     <Button
                       variant="ghost"
@@ -180,14 +178,12 @@ export function MaterialsSection() {
         </SidebarMenu>
       </SidebarGroupContent>
 
-      {/* PDF Preview Modal */}
       <PDFPreviewModal 
         pdf={previewPDF}
         isOpen={isPDFPreviewOpen}
         onOpenChange={setIsPDFPreviewOpen}
       />
 
-      {/* Code Preview Modal */}
       <CodePreviewModal 
         code={previewCode}
         isOpen={isCodePreviewOpen}

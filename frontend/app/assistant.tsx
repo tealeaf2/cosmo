@@ -15,6 +15,7 @@ import {
 import { ThreadListSidebar } from "@/components/assistant-ui/threadlist-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { MaterialsProvider, useMaterials } from "@/lib/materials-context";
+import { ReferencesProvider } from "@/lib/references-context";
 
 function AssistantContent() {
   const { getEnabledMaterials } = useMaterials();
@@ -52,7 +53,9 @@ function AssistantContent() {
 export const Assistant = () => {
   return (
     <MaterialsProvider>
+      <ReferencesProvider>
         <AssistantContent />
+      </ReferencesProvider>
     </MaterialsProvider>
   );
 };
