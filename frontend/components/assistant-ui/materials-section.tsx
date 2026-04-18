@@ -9,7 +9,7 @@ import {
   Upload,
   SquareCheckBig,
   Square,
-  Eye
+  Eye,
   FileCodeCorner as Code,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

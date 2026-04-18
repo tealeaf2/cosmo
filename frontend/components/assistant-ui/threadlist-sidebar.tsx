@@ -42,7 +42,16 @@ export function ThreadListSidebar({
       </SidebarHeader>
       <SidebarContent className="aui-sidebar-content px-2">
         <ThreadList />
+        <div className="aui-top-pane min-h-0 flex-1 overflow-auto">
         <MaterialsSection />
+        </div>
+      </SidebarContent>
+      <SidebarRail />
+
+      <SidebarContent className="aui-sidebar-content px-2">
+        <div className="aui-bottom-pane min-h-0 flex-1 overflow-auto">
+        <MaterialsSection />
+        </div>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
