@@ -15,6 +15,7 @@ import {
 import { ThreadListSidebar } from "@/components/assistant-ui/threadlist-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { MaterialsProvider, useMaterials } from "@/lib/materials-context";
+import { HighlightToggle } from "@/components/ui/highlight";
 import { ReferencesProvider } from "@/lib/references-context";
 
 function AssistantContent() {
@@ -39,6 +40,7 @@ function AssistantContent() {
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
+              <HighlightToggle className="ml-auto"/>
             </header>
             <div className="flex-1 overflow-hidden">
               <Thread />

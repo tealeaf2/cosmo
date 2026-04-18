@@ -37,7 +37,9 @@ import {
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react";
+import HighlightToggle from "@/components/ui/highlight";
 import type { FC } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LoadingDots } from "../ui/loading";
 import { MoonStar } from 'lucide-react';
 
