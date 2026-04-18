@@ -9,7 +9,7 @@ import {
   Upload,
   SquareCheckBig,
   Square,
-  Eye
+  Eye,
   FileCodeCorner as Code,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useMaterials, type Material } from "@/lib/materials-context";
 import { PDFPreviewModal } from "./pdf-preview-modal";
+import { CodePreviewModal } from "./code-preview-modal";
 
 type MaterialType = "pdf" | "website" | "video" | "code";
 
@@ -41,6 +42,8 @@ export function MaterialsSection() {
   const [activeTab, setActiveTab] = useState<MaterialType>("pdf");
   const [previewPDF, setPreviewPDF] = useState<Material | null>(null);
   const [isPDFPreviewOpen, setIsPDFPreviewOpen] = useState(false);
+  const [previewCode, setPreviewCode] = useState<Material | null>(null);
+  const [isCodePreviewOpen, setIsCodePreviewOpen] = useState(false);
 
   const getIcon = (type: MaterialType) => {
     switch (type) {
@@ -55,6 +58,13 @@ export function MaterialsSection() {
     if (material.type === "pdf" && material.file) {
       setPreviewPDF(material);
       setIsPDFPreviewOpen(true);
+    }
+  };
+
+  const handleCodePreview = (material: Material) => {
+    if (material.type === "code" && material.file) {
+      setPreviewCode(material);
+      setIsCodePreviewOpen(true);
     }
   };
 
@@ -111,10 +121,17 @@ export function MaterialsSection() {
                   
                   <div 
                     className={`flex items-center gap-2 flex-1 min-w-0 ${
-                      material.type === "pdf" ? "cursor-pointer hover:opacity-75 hover:bg-blue-50/50 rounded-sm px-1 transition-colors" : ""
+                      (material.type === "pdf" || material.type === "code") ? "cursor-pointer hover:opacity-75 hover:bg-blue-50/50 rounded-sm px-1 transition-colors" : ""
                     }`}
-                    onClick={() => material.type === "pdf" ? handlePDFPreview(material) : undefined}
-                    title={material.type === "pdf" ? "Click to preview PDF" : material.url || material.name}
+                    onClick={() => {
+                      if (material.type === "pdf") handlePDFPreview(material);
+                      if (material.type === "code") handleCodePreview(material);
+                    }}
+                    title={
+                      material.type === "pdf" ? "Click to preview PDF" : 
+                      material.type === "code" ? "Click to preview code" :
+                      material.url || material.name
+                    }
                   >
                     {getIcon(material.type)}
                     <span className="text-sm truncate">
@@ -130,6 +147,19 @@ export function MaterialsSection() {
                       className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
                       onClick={() => handlePDFPreview(material)}
                       title="Preview PDF"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  )}
+
+                  {/* Preview button for Code */}
+                  {material.type === "code" && material.file && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
+                      onClick={() => handleCodePreview(material)}
+                      title="Preview Code"
                     >
                       <Eye className="h-3 w-3" />
                     </Button>
@@ -155,6 +185,13 @@ export function MaterialsSection() {
         pdf={previewPDF}
         isOpen={isPDFPreviewOpen}
         onOpenChange={setIsPDFPreviewOpen}
+      />
+
+      {/* Code Preview Modal */}
+      <CodePreviewModal 
+        code={previewCode}
+        isOpen={isCodePreviewOpen}
+        onOpenChange={setIsCodePreviewOpen}
       />
     </SidebarGroup>
   );
@@ -305,7 +342,7 @@ function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProp
 
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={
-            (activeTab === "pdf" && !file) || 
+            ((activeTab === "pdf" || activeTab === "code") && !file) || 
             ((activeTab === "website" || activeTab === "video") && !url)
           }>
             Add Material
