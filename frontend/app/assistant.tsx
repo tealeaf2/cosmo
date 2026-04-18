@@ -17,11 +17,15 @@ import { Separator } from "@/components/ui/separator";
 import { MaterialsProvider, useMaterials } from "@/lib/materials-context";
 import { HighlightToggle } from "@/components/ui/highlight";
 import { useHighlights } from "@/components/assistant-ui/use-highlights";
+import { NotesToggle, NotesToggleWithPopup } from "@/components/ui/notes";
 import { ReferencesProvider } from "@/lib/references-context";
+import { useState } from "react";
 
 function AssistantContent() {
   const { getEnabledMaterials } = useMaterials();
   const highlights = useHighlights();
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [notes, setNotes] = useState<string>("");
   
   const runtime = useChatRuntime({
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
@@ -42,13 +46,16 @@ function AssistantContent() {
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <HighlightToggle 
-                className="ml-auto"
-                on={highlights.isHighlightMode}
-                onChange={(isOn) => isOn ? highlights.enableHighlightMode() : highlights.disableHighlightMode()}
-                tooltipOn="Exit Deep Dive Mode"
-                tooltipOff="Deep Dive Mode"
-              />
+              <div className="ml-auto flex items-center gap-2">
+                <NotesToggleWithPopup on={isNotesOpen}/>
+                <HighlightToggle 
+                  className="ml-auto"
+                  on={highlights.isHighlightMode}
+                  onChange={(isOn) => isOn ? highlights.enableHighlightMode() : highlights.disableHighlightMode()}
+                  tooltipOn="Exit Deep Dive Mode"
+                  tooltipOff="Deep Dive Mode"
+                />
+              </div>
             </header>
             <div className="flex-1 overflow-hidden">
               <Thread highlights={highlights} />
