@@ -16,10 +16,12 @@ import { ThreadListSidebar } from "@/components/assistant-ui/threadlist-sidebar"
 import { Separator } from "@/components/ui/separator";
 import { MaterialsProvider, useMaterials } from "@/lib/materials-context";
 import { HighlightToggle } from "@/components/ui/highlight";
+import { useHighlights } from "@/components/assistant-ui/use-highlights";
 import { ReferencesProvider } from "@/lib/references-context";
 
 function AssistantContent() {
   const { getEnabledMaterials } = useMaterials();
+  const highlights = useHighlights();
   
   const runtime = useChatRuntime({
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
@@ -40,10 +42,16 @@ function AssistantContent() {
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <HighlightToggle className="ml-auto"/>
+              <HighlightToggle 
+                className="ml-auto"
+                on={highlights.isHighlightMode}
+                onChange={(isOn) => isOn ? highlights.enableHighlightMode() : highlights.disableHighlightMode()}
+                tooltipOn="Exit Deep Dive Mode"
+                tooltipOff="Deep Dive Mode"
+              />
             </header>
             <div className="flex-1 overflow-hidden">
-              <Thread />
+              <Thread highlights={highlights} />
             </div>
           </SidebarInset>
         </div>

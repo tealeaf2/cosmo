@@ -36,17 +36,20 @@ import {
   PencilIcon,
   RefreshCwIcon,
   SquareIcon,
+  MoonStar
 } from "lucide-react";
-import HighlightToggle from "@/components/ui/highlight";
+import { useHighlights } from "@/components/assistant-ui/use-highlights";
 import type { FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { LoadingDots } from "../ui/loading";
-import { MoonStar } from 'lucide-react';
 
-export const Thread: FC = () => {
+export const Thread: FC<{ highlights: ReturnType<typeof useHighlights> }> = ({ highlights }) => {
   return (
     <ThreadPrimitive.Root
-      className="aui-root aui-thread-root @container flex h-full flex-col bg-background"
+      className={cn(
+        "aui-root aui-thread-root @container flex h-full flex-col bg-background",
+        highlights.isHighlightMode && "highlight-mode"
+      )}
       style={{
         ["--thread-max-width" as string]: "44rem",
         ["--composer-radius" as string]: "24px",
@@ -62,7 +65,7 @@ export const Thread: FC = () => {
         </AuiIf>
 
         <ThreadPrimitive.Messages>
-          {() => <ThreadMessage />}
+          {() => <ThreadMessage highlights={highlights} />}
         </ThreadPrimitive.Messages>
 
         <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-(--thread-max-width) flex-col gap-4 overflow-visible rounded-t-(--composer-radius) bg-background pb-4 md:pb-6">
@@ -74,12 +77,12 @@ export const Thread: FC = () => {
   );
 };
 
-const ThreadMessage: FC = () => {
+const ThreadMessage: FC<{ highlights: ReturnType<typeof useHighlights> }> = ({ highlights }) => {
   const role = useAuiState((s) => s.message.role);
   const isEditing = useAuiState((s) => s.message.composer.isEditing);
   if (isEditing) return <EditComposer />;
-  if (role === "user") return <UserMessage />;
-  return <AssistantMessage />;
+  if (role === "user") return <UserMessage highlights={highlights} />;
+  return <AssistantMessage highlights={highlights} />;
 };
 
 const ThreadScrollToBottom: FC = () => {
@@ -211,7 +214,7 @@ const MessageError: FC = () => {
   );
 };
 
-const AssistantMessage: FC = () => {
+const AssistantMessage: FC<{ highlights: ReturnType<typeof useHighlights> }> = ({ highlights }) => {
   const messageId = useAuiState((s) => s.message.id);
   const messageContent = useAuiState((s) => {
     return s.message.parts
@@ -221,7 +224,6 @@ const AssistantMessage: FC = () => {
   });
   const { addReference } = useReferences();
 
-  // Track references in the message content
   React.useEffect(() => {
     if (messageContent && messageContent.trim().length > 0 && messageId) {
       const { references } = extractReferences(messageContent, messageId);
@@ -231,7 +233,7 @@ const AssistantMessage: FC = () => {
         addReference(ref);
       });
     }
-  }, [messageContent, messageId]); // Removed addReference from deps since it's now memoized
+  }, [messageContent, messageId]);
 
   return (
     <MessagePrimitive.Root
@@ -260,13 +262,13 @@ const AssistantMessage: FC = () => {
 
       <div className="aui-assistant-message-footer mt-1 ml-2 flex">
         <BranchPicker />
-        <AssistantActionBar />
+        <AssistantActionBar highlights={highlights} />
       </div>
     </MessagePrimitive.Root>
   );
 };
 
-const AssistantActionBar: FC = () => {
+const AssistantActionBar: FC<{ highlights: ReturnType<typeof useHighlights> }> = ({ highlights }) => {
   return (
     <ActionBarPrimitive.Root
       hideWhenRunning
@@ -315,7 +317,7 @@ const AssistantActionBar: FC = () => {
   );
 };
 
-const UserMessage: FC = () => {
+const UserMessage: FC<{ highlights: ReturnType<typeof useHighlights> }> = ({ highlights }) => {
   const messageId = useAuiState((s) => s.message.id);
   const messageContent = useAuiState((s) => {
     return s.message.parts
@@ -335,7 +337,7 @@ const UserMessage: FC = () => {
         addReference(ref);
       });
     }
-  }, [messageContent, messageId]); // Removed addReference from deps since it's now memoized
+  }, [messageContent, messageId]);
 
   return (
     <MessagePrimitive.Root
