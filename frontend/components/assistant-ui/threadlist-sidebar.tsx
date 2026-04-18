@@ -13,6 +13,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
+import { MaterialsSection } from "@/components/assistant-ui/materials-section";
 
 export function ThreadListSidebar({
   ...props
@@ -34,7 +35,7 @@ export function ThreadListSidebar({
                   </div>
                   <div className="aui-sidebar-header-heading mr-6 flex flex-col gap-0.5 leading-none">
                     <span className="aui-sidebar-header-title font-semibold">
-                      assistant-ui
+                      cosmo
                     </span>
                   </div>
                 </Link>
@@ -45,31 +46,9 @@ export function ThreadListSidebar({
       </SidebarHeader>
       <SidebarContent className="aui-sidebar-content px-2">
         <ThreadList />
+        <MaterialsSection />
       </SidebarContent>
       <SidebarRail />
-      <SidebarFooter className="aui-sidebar-footer border-t">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link
-                href="https://github.com/assistant-ui/assistant-ui"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div className="aui-sidebar-footer-icon-wrapper flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GitHubIcon className="aui-sidebar-footer-icon size-4" />
-                </div>
-                <div className="aui-sidebar-footer-heading flex flex-col gap-0.5 leading-none">
-                  <span className="aui-sidebar-footer-title font-semibold">
-                    GitHub
-                  </span>
-                  <span>View Source</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
