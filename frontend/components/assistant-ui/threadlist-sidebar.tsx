@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { MaterialsSection } from "@/components/assistant-ui/materials-section";
+import { ReferenceSection } from "@/components/assistant-ui/reference-section";
 
 export function ThreadListSidebar({
   ...props
@@ -43,14 +44,14 @@ export function ThreadListSidebar({
       <SidebarContent className="aui-sidebar-content px-2">
         <ThreadList />
         <div className="aui-top-pane min-h-0 flex-1 overflow-auto">
-        <MaterialsSection />
+          <MaterialsSection />
         </div>
       </SidebarContent>
       <SidebarRail />
 
       <SidebarContent className="aui-sidebar-content px-2">
         <div className="aui-bottom-pane min-h-0 flex-1 overflow-auto">
-        <MaterialsSection />
+        <ReferenceSection />
         </div>
       </SidebarContent>
       <SidebarRail />
