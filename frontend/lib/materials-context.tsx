@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface Material {
   id: string;
-  type: "pdf" | "website" | "video";
+  type: "pdf" | "website" | "video" | "code";
   name: string;
   url?: string;
   file?: string;

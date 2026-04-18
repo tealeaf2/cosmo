@@ -11,7 +11,7 @@ import { system_prompt } from "./prompt";
 
 interface Material {
   id: string;
-  type: "pdf" | "website" | "video";
+  type: "pdf" | "website" | "video" | "code";
   name: string;
   url?: string;
   file?: File;
@@ -50,6 +50,13 @@ export async function POST(req: Request) {
       return {
         type: "text",
         text: "URL: " + material.url,
+      }
+    }
+    else if (material.type === "code") {
+      return {
+        type: "file",
+        data: material.file,
+        mediaType: 'text/plain'
       }
     }
   });
