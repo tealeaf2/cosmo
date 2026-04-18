@@ -6,7 +6,7 @@ const LoadingDots = () => {
       <span>Loading</span>
       <div className="flex space-x-1">
         <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s] bg-darkslateblue-300"></div>
-        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s] bg-slateblue-300"></div>
+        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s] bg-slateblue-200"></div>
         <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce bg-slateblue-100"></div>
       </div>
     </div>

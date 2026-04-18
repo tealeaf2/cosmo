@@ -10,6 +10,7 @@ import {
   SquareCheckBig,
   Square,
   Eye
+  FileCodeCorner as Code,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -32,7 +33,7 @@ import {
 import { useMaterials, type Material } from "@/lib/materials-context";
 import { PDFPreviewModal } from "./pdf-preview-modal";
 
-type MaterialType = "pdf" | "website" | "video";
+type MaterialType = "pdf" | "website" | "video" | "code";
 
 export function MaterialsSection() {
   const { materials, addMaterial, toggleMaterial, removeMaterial } = useMaterials();
@@ -46,6 +47,7 @@ export function MaterialsSection() {
       case "pdf": return <FileText className="h-4 w-4" />;
       case "website": return <Link className="h-4 w-4" />;
       case "video": return <PlayCircle className="h-4 w-4" />;
+      case "code": return <Code className="h-4 w-4" />;
     }
   };
 
@@ -70,7 +72,7 @@ export function MaterialsSection() {
             <DialogHeader>
               <DialogTitle>Add Material</DialogTitle>
               <DialogDescription>
-                Upload PDFs, add website links, or include video URLs to provide context for your conversations.
+                Upload PDFs, add website links, attach code or include video URLs to provide context for your conversations.
               </DialogDescription>
             </DialogHeader>
             <MaterialsDialog 
@@ -180,11 +182,10 @@ function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (activeTab === "pdf" && file) {
+    if ((activeTab === "pdf" || activeTab === "code") && file) {
       const dataUrl = await getBase64(file);
-      
       onAdd({
-        type: "pdf",
+        type: activeTab,
         name: file.name,
         file: dataUrl,
       });
@@ -237,21 +238,32 @@ function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProp
           <PlayCircle className="h-4 w-4 inline mr-2" />
           Video
         </button>
+        <button
+          className={`px-4 py-2 text-sm font-medium border-b-2 ${
+            activeTab === "code" 
+              ? "border-primary text-primary" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+          onClick={() => setActiveTab("code")}
+        >
+          <Code className="h-4 w-4 inline mr-2" />
+          Code
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {activeTab === "pdf" && (
+        {(activeTab === "pdf" || activeTab === "code") && (
           <div className="space-y-2">
-            <div className="text-sm font-medium">Upload PDF</div>
+            <div className="text-sm font-medium">Upload {activeTab === "pdf" ? "PDF" : "Code"}</div>
             <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
               <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm text-muted-foreground mb-2">
-                Drag and drop a PDF file here, or click to select
+                Drag and drop a {activeTab === "pdf" ? "PDF" : "Code File"} here, or click to select
               </p>
               <input
                 id="file"
                 type="file"
-                accept=".pdf"
+                accept=".pdf,.py,.js,.ts,.java,.cpp,.cs,.rb,.go,.rs,.c, .md, .txt,.json"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 className="hidden"
               />
@@ -260,7 +272,7 @@ function MaterialsDialog({ activeTab, setActiveTab, onAdd }: MaterialsDialogProp
                 variant="outline" 
                 onClick={() => document.getElementById('file')?.click()}
               >
-                Select PDF
+                Select {activeTab === "pdf" ? "PDF" : "Code File"}
               </Button>
               {file && (
                 <p className="mt-2 text-sm text-foreground">
