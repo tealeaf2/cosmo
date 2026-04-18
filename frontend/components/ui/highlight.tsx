@@ -44,7 +44,7 @@ export const HighlightToggle: React.FC<HighlightToggleProps> = ({
 
   return (
     <Button
-      variant={onState ? "default" : "outline"} // Switches variant when active
+      variant={onState ? "default" : "outline"}
       onClick={toggle}
       disabled={disabled}
       title={onState ? tooltipOn : tooltipOff}
