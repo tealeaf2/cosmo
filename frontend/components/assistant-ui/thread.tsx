@@ -8,7 +8,10 @@ import { Reasoning } from "@/components/assistant-ui/reasoning";
 import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { Button } from "@/components/ui/button";
+import { useReferences } from "@/lib/references-context";
+import { extractReferences } from "@/lib/reference-extractor";
 import { cn } from "@/lib/utils";
+import * as React from "react";
 import {
   ActionBarMorePrimitive,
   ActionBarPrimitive,
@@ -207,10 +210,32 @@ const MessageError: FC = () => {
 };
 
 const AssistantMessage: FC = () => {
+  const messageId = useAuiState((s) => s.message.id);
+  const messageContent = useAuiState((s) => {
+    return s.message.parts
+      .filter(part => part.type === 'text')
+      .map(part => part.text)
+      .join(' ');
+  });
+  const { addReference } = useReferences();
+
+  // Track references in the message content
+  React.useEffect(() => {
+    if (messageContent && messageContent.trim().length > 0 && messageId) {
+      const { references } = extractReferences(messageContent, messageId);
+      
+      // Add each extracted reference
+      references.forEach(ref => {
+        addReference(ref);
+      });
+    }
+  }, [messageContent, messageId]); // Removed addReference from deps since it's now memoized
+
   return (
     <MessagePrimitive.Root
       className="aui-assistant-message-root fade-in slide-in-from-bottom-1 relative mx-auto w-full max-w-(--thread-max-width) animate-in py-3 duration-150"
       data-role="assistant"
+      data-message-id={messageId}
     >
       <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
         
@@ -289,10 +314,32 @@ const AssistantActionBar: FC = () => {
 };
 
 const UserMessage: FC = () => {
+  const messageId = useAuiState((s) => s.message.id);
+  const messageContent = useAuiState((s) => {
+    return s.message.parts
+      .filter(part => part.type === 'text')
+      .map(part => part.text)
+      .join(' ');
+  });
+  const { addReference } = useReferences();
+
+  // Track references in the message content
+  React.useEffect(() => {
+    if (messageContent && messageContent.trim().length > 0 && messageId) {
+      const { references } = extractReferences(messageContent, messageId);
+      
+      // Add each extracted reference
+      references.forEach(ref => {
+        addReference(ref);
+      });
+    }
+  }, [messageContent, messageId]); // Removed addReference from deps since it's now memoized
+
   return (
     <MessagePrimitive.Root
       className="aui-user-message-root fade-in slide-in-from-bottom-1 mx-auto grid w-full max-w-(--thread-max-width) animate-in auto-rows-auto grid-cols-[minmax(72px,1fr)_auto] content-start gap-y-2 px-2 py-3 duration-150 [&:where(>*)]:col-start-2"
       data-role="user"
+      data-message-id={messageId}
     >
       <UserMessageAttachments />
 
