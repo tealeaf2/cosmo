@@ -6,7 +6,7 @@ import {
   ThreadListItemPrimitive,
   ThreadListPrimitive,
 } from "@assistant-ui/react";
-import { ArchiveIcon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { ArchiveIcon, MoreHorizontalIcon, RefreshCcw } from "lucide-react";
 import type { FC } from "react";
 
 export const ThreadList: FC = () => {
@@ -16,11 +16,11 @@ export const ThreadList: FC = () => {
       <AuiIf condition={({ threads }) => threads.isLoading}>
         <ThreadListSkeleton />
       </AuiIf>
-      <AuiIf condition={({ threads }) => !threads.isLoading}>
+      {/* <AuiIf condition={({ threads }) => !threads.isLoading}>
         <ThreadListPrimitive.Items>
           {() => <ThreadListItem />}
         </ThreadListPrimitive.Items>
-      </AuiIf>
+      </AuiIf> */}
     </ThreadListPrimitive.Root>
   );
 };
@@ -32,8 +32,8 @@ const ThreadListNew: FC = () => {
         variant="outline"
         className="aui-thread-list-new h-9 justify-start gap-2 rounded-lg px-3 text-sm hover:bg-muted data-active:bg-muted"
       >
-        <PlusIcon className="size-4" />
-        New Thread
+        <RefreshCcw className="size-4" />
+        Reset Topic
       </Button>
     </ThreadListPrimitive.New>
   );
