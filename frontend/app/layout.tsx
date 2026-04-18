@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "cosmo: the essence of being human",
-  description: "created by 75% sweet less ice",
+  title: "Cosmo: the essence of being human",
+  description: "Created by 75% Sweet, Less Ice",
 };
 
 export default function RootLayout({

@@ -35,6 +35,8 @@ import {
   SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
+import { LoadingDots } from "../ui/loading";
+import { MoonStar } from 'lucide-react';
 
 export const Thread: FC = () => {
   return (
@@ -95,10 +97,12 @@ const ThreadWelcome: FC = () => {
       <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
         <div className="aui-thread-welcome-message flex size-full flex-col justify-center px-4">
           <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-2xl duration-200">
-            Cosmo here!
+            <div className="flex items-center">
+              C<MoonStar className="size-5 pt-1" color="#2a2d79" strokeWidth={3}/>smo Here!
+            </div>
           </h1>
           <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-xl delay-75 duration-200">
-            What would you like help with today?
+            What would you like to learn today?
           </p>
         </div>
       </div>
@@ -209,6 +213,11 @@ const AssistantMessage: FC = () => {
       data-role="assistant"
     >
       <div className="aui-assistant-message-content wrap-break-word px-2 text-foreground leading-relaxed">
+        
+        <AuiIf condition={(s) => s.thread.isRunning && s.message.parts.length === 0}>
+          <LoadingDots />
+        </AuiIf>
+
         <MessagePrimitive.Parts>
           {({ part }) => {
             if (part.type === "text") return <MarkdownText />;
