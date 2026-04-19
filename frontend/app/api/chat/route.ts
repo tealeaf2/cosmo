@@ -35,21 +35,21 @@ export async function POST(req: Request) {
   const contentArray = activeMaterials.map((material) => {
     if (material.type === "pdf") {
       return {
-        type: "file",
-        data: material.file,
+        type: "file" as const,
+        data: material.file || "",
         mediaType: 'application/pdf',
       }
     } else if (material.type === "video") {
       return {
-        type: "file",
-        data: material.url,
+        type: "file" as const,
+        data: material.url || "",
         mediaType: 'video/mp4',
       }
     }
     else if (material.type === "website") {
       return {
-        type: "text",
-        text: "URL: " + material.url,
+        type: "text" as const,
+        text: "URL: " + (material.url || ""),
       }
     }
     else if (material.type === "code") {
@@ -58,12 +58,16 @@ export async function POST(req: Request) {
         : material.file;
         
       return {
-        type: "file",
-        data: rawBase64,
+        type: "file" as const,
+        data: rawBase64 || "",
         mediaType: 'text/plain'
       }
     }
-  });
+    return {
+      type: "text" as const,
+      text: "",
+    }
+  }).filter((content) => content.data || content.text);
 
   coreMessages.push({
     role: "user",
