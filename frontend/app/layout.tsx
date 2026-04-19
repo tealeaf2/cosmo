@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cosmo: the essence of being human",
+  title: "Cosmo: Unlock Your Cosmic Potential",
   description: "Created by 75% Sweet, Less Ice",
 };
 

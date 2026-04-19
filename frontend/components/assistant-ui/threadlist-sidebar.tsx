@@ -15,6 +15,7 @@ import {
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { MaterialsSection } from "@/components/assistant-ui/materials-section";
 import { ReferenceSection } from "@/components/assistant-ui/reference-section";
+import { Rocket } from 'lucide-react';
 
 export function ThreadListSidebar({
   ...props
@@ -28,7 +29,7 @@ export function ThreadListSidebar({
               <SidebarMenuButton size="lg" asChild>
                 <div>
                   <div className="aui-sidebar-header-icon-wrapper flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <MessagesSquare className="aui-sidebar-header-icon size-4" />
+                    <Rocket className="aui-sidebar-header-icon size-4" />
                   </div>
                   <div className="aui-sidebar-header-heading mr-6 flex flex-col gap-0.5 leading-none">
                     <span className="aui-sidebar-header-title font-semibold">
