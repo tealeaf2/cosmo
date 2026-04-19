@@ -1,7 +1,7 @@
 "use client";
 
 import { PropsWithChildren, useEffect, useState, type FC } from "react";
-import { XIcon, PlusIcon, FileText, NotepadText } from "lucide-react";
+import { XIcon, PlusIcon, FileText, NotepadText, Code } from "lucide-react";
 import {
   AttachmentPrimitive,
   ComposerPrimitive,
@@ -26,6 +26,114 @@ import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button
 import { cn } from "@/lib/utils";
 import { useNotes } from "@/lib/notes-context";
 
+// Helper function to detect code files and return appropriate MIME type
+const getCodeFileMimeType = (fileName: string): string | null => {
+  const ext = fileName.toLowerCase().split('.').pop();
+  
+  const mimeTypeMap: Record<string, string> = {
+    // JavaScript/TypeScript
+    'js': 'text/javascript',
+    'jsx': 'text/javascript',
+    'ts': 'text/typescript',
+    'tsx': 'text/typescript',
+    'mjs': 'text/javascript',
+    'cjs': 'text/javascript',
+    
+    // Python
+    'py': 'text/x-python',
+    'pyw': 'text/x-python',
+    'pyi': 'text/x-python',
+    
+    // Java/JVM
+    'java': 'text/x-java-source',
+    'kt': 'text/x-kotlin',
+    'scala': 'text/x-scala',
+    'clj': 'text/x-clojure',
+    
+    // C/C++
+    'c': 'text/x-c',
+    'cpp': 'text/x-c++src',
+    'cc': 'text/x-c++src',
+    'cxx': 'text/x-c++src',
+    'h': 'text/x-c',
+    'hpp': 'text/x-c++hdr',
+    'hh': 'text/x-c++hdr',
+    'hxx': 'text/x-c++hdr',
+    
+    // C#
+    'cs': 'text/x-csharp',
+    
+    // Web
+    'html': 'text/html',
+    'htm': 'text/html',
+    'css': 'text/css',
+    'scss': 'text/x-scss',
+    'sass': 'text/x-sass',
+    'less': 'text/x-less',
+    
+    // Data formats
+    'json': 'application/json',
+    'xml': 'text/xml',
+    'yaml': 'text/yaml',
+    'yml': 'text/yaml',
+    'toml': 'text/x-toml',
+    'ini': 'text/plain',
+    'cfg': 'text/plain',
+    'conf': 'text/plain',
+    
+    // Shell scripts
+    'sh': 'text/x-shellscript',
+    'bash': 'text/x-shellscript',
+    'zsh': 'text/x-shellscript',
+    'fish': 'text/x-shellscript',
+    'ps1': 'text/x-powershell',
+    
+    // Other languages
+    'php': 'text/x-php',
+    'rb': 'text/x-ruby',
+    'go': 'text/x-go',
+    'rs': 'text/x-rust',
+    'swift': 'text/x-swift',
+    'r': 'text/x-r',
+    'sql': 'text/x-sql',
+    'lua': 'text/x-lua',
+    'pl': 'text/x-perl',
+    'pm': 'text/x-perl',
+    'asm': 'text/x-asm',
+    's': 'text/x-asm',
+    'f90': 'text/x-fortran',
+    'f95': 'text/x-fortran',
+    'pas': 'text/x-pascal',
+    'vb': 'text/x-vb',
+    'hs': 'text/x-haskell',
+    'ml': 'text/x-ocaml',
+    'elm': 'text/x-elm',
+    'dart': 'text/x-dart',
+    'jl': 'text/x-julia',
+    
+    // Markup/Documentation
+    'md': 'text/markdown',
+    'markdown': 'text/markdown',
+    'tex': 'text/x-tex',
+    'latex': 'text/x-tex',
+    
+    // Dockerfile and config
+    'dockerfile': 'text/x-dockerfile',
+    'makefile': 'text/x-makefile',
+    'cmake': 'text/x-cmake',
+    'gradle': 'text/x-gradle',
+  };
+  
+  return ext ? mimeTypeMap[ext] || null : null;
+};
+
+// Helper function to check if a file is a code file
+const isCodeFile = (fileName: string): boolean => {
+  return getCodeFileMimeType(fileName) !== null;
+};
+
+// Export helper functions for use in other parts of the system
+export { getCodeFileMimeType, isCodeFile };
 
 const useFileSrc = (file: File | undefined) => {
   const [src, setSrc] = useState<string | undefined>(undefined);
@@ -110,6 +218,12 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
 
 const AttachmentThumb: FC = () => {
   const src = useAttachmentSrc();
+  const isCode = useAuiState((s) => {
+    if (s.attachment.type === "code") return true;
+    // Check file name for code extensions if type isn't already set
+    const fileName = s.attachment.name || "";
+    return isCodeFile(fileName);
+  });
 
   return (
     <Avatar className="aui-attachment-tile-avatar h-full w-full rounded-none">
@@ -119,7 +233,11 @@ const AttachmentThumb: FC = () => {
         className="aui-attachment-tile-image object-cover"
       />
       <AvatarFallback>
-        <FileText className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
+        {isCode ? (
+          <Code className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
+        ) : (
+          <FileText className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
+        )}
       </AvatarFallback>
     </Avatar>
   );
@@ -132,15 +250,22 @@ const AttachmentUI: FC = () => {
   const isImage = useAuiState((s) => s.attachment.type === "image");
   const typeLabel = useAuiState((s) => {
     const type = s.attachment.type;
+    const fileName = s.attachment.name || "";
+    
+    // Check if it's a code file by extension
+    const isCode = isCodeFile(fileName);
+    
     switch (type) {
       case "image":
         return "Image";
       case "document":
         return "Document";
+      case "code":
+        return "Code";
       case "file":
-        return "File";
+        return isCode ? "Code" : "File";
       default:
-        return type;
+        return isCode ? "Code" : type;
     }
   });
 
