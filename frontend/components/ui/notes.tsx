@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NotebookPen } from 'lucide-react';
-import Popup from 'reactjs-popup'
+import { useNotes } from "@/lib/notes-context";
 
 export type NoteToggleProps = {
     on?: boolean;
@@ -69,22 +69,22 @@ export const NotesToggle: React.FC<NoteToggleProps> = ({
 
 
 export const NotesToggleWithPopup: React.FC<NoteToggleProps> = (props) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [noteContent, setNoteContent] = React.useState("");
+  const { notes, setNotes, isNotesOpen, setIsNotesOpen } = useNotes();
 
   const handleToggle = () => {
-    setIsOpen(!isOpen);
-    props.onChange?.(!isOpen);
+    const newState = !isNotesOpen;
+    setIsNotesOpen(newState);
+    props.onChange?.(newState);
   };
 
   return (
     <div>
-      <NotesToggle {...props} on={isOpen} onChange={handleToggle} />
+      <NotesToggle {...props} on={isNotesOpen} onChange={handleToggle} />
       <aside 
   className={cn(
     "fixed right-0 top-16 bottom-0 w-80 border-l bg-white p-4 transition-transform duration-300 ease-in-out shadow-xl",
     "z-[100]",
-    isOpen ? "translate-x-0" : "translate-x-full"
+    isNotesOpen ? "translate-x-0" : "translate-x-full"
   )}
 >
   <div className="flex items-center justify-between mb-4">
@@ -101,11 +101,11 @@ export const NotesToggleWithPopup: React.FC<NoteToggleProps> = (props) => {
       "relative z-[101]"
     )}
     placeholder="Type in your thoughts..."
-    value={noteContent}
+    value={notes}
     onChange={(e) => {
-      setNoteContent(e.target.value);
+      setNotes(e.target.value);
     }}
-    autoFocus={isOpen} // Focus automatically when opened
+    autoFocus={isNotesOpen}
   />
 </aside>
     </div>
