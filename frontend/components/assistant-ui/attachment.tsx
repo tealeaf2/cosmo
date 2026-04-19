@@ -30,109 +30,36 @@ import { useNotes } from "@/lib/notes-context";
 const getCodeFileMimeType = (fileName: string): string | null => {
   const ext = fileName.toLowerCase().split('.').pop();
   
+  // FIXED: Mapped all code files to 'text/plain' to prevent backend rejections 
+  // from strict AI SDKs that don't recognize 'text/x-c' or 'text/x-java-source'
   const mimeTypeMap: Record<string, string> = {
-    // JavaScript/TypeScript
-    'js': 'text/javascript',
-    'jsx': 'text/javascript',
-    'ts': 'text/typescript',
-    'tsx': 'text/typescript',
-    'mjs': 'text/javascript',
-    'cjs': 'text/javascript',
-    
-    // Python
-    'py': 'text/x-python',
-    'pyw': 'text/x-python',
-    'pyi': 'text/x-python',
-    
-    // Java/JVM
-    'java': 'text/x-java-source',
-    'kt': 'text/x-kotlin',
-    'scala': 'text/x-scala',
-    'clj': 'text/x-clojure',
-    
-    // C/C++
-    'c': 'text/x-c',
-    'cpp': 'text/x-c++src',
-    'cc': 'text/x-c++src',
-    'cxx': 'text/x-c++src',
-    'h': 'text/x-c',
-    'hpp': 'text/x-c++hdr',
-    'hh': 'text/x-c++hdr',
-    'hxx': 'text/x-c++hdr',
-    
-    // C#
-    'cs': 'text/x-csharp',
-    
-    // Web
-    'html': 'text/html',
-    'htm': 'text/html',
-    'css': 'text/css',
-    'scss': 'text/x-scss',
-    'sass': 'text/x-sass',
-    'less': 'text/x-less',
-    
-    // Data formats
-    'json': 'application/json',
-    'xml': 'text/xml',
-    'yaml': 'text/yaml',
-    'yml': 'text/yaml',
-    'toml': 'text/x-toml',
-    'ini': 'text/plain',
-    'cfg': 'text/plain',
-    'conf': 'text/plain',
-    
-    // Shell scripts
-    'sh': 'text/x-shellscript',
-    'bash': 'text/x-shellscript',
-    'zsh': 'text/x-shellscript',
-    'fish': 'text/x-shellscript',
-    'ps1': 'text/x-powershell',
-    
-    // Other languages
-    'php': 'text/x-php',
-    'rb': 'text/x-ruby',
-    'go': 'text/x-go',
-    'rs': 'text/x-rust',
-    'swift': 'text/x-swift',
-    'r': 'text/x-r',
-    'sql': 'text/x-sql',
-    'lua': 'text/x-lua',
-    'pl': 'text/x-perl',
-    'pm': 'text/x-perl',
-    'asm': 'text/x-asm',
-    's': 'text/x-asm',
-    'f90': 'text/x-fortran',
-    'f95': 'text/x-fortran',
-    'pas': 'text/x-pascal',
-    'vb': 'text/x-vb',
-    'hs': 'text/x-haskell',
-    'ml': 'text/x-ocaml',
-    'elm': 'text/x-elm',
-    'dart': 'text/x-dart',
-    'jl': 'text/x-julia',
-    
-    // Markup/Documentation
-    'md': 'text/markdown',
-    'markdown': 'text/markdown',
-    'tex': 'text/x-tex',
-    'latex': 'text/x-tex',
-    
-    // Dockerfile and config
-    'dockerfile': 'text/x-dockerfile',
-    'makefile': 'text/x-makefile',
-    'cmake': 'text/x-cmake',
-    'gradle': 'text/x-gradle',
+    'js': 'text/plain', 'jsx': 'text/plain', 'ts': 'text/plain', 'tsx': 'text/plain',
+    'mjs': 'text/plain', 'cjs': 'text/plain', 'py': 'text/plain', 'pyw': 'text/plain',
+    'pyi': 'text/plain', 'java': 'text/plain', 'kt': 'text/plain', 'scala': 'text/plain',
+    'clj': 'text/plain', 'c': 'text/plain', 'cpp': 'text/plain', 'cc': 'text/plain',
+    'cxx': 'text/plain', 'h': 'text/plain', 'hpp': 'text/plain', 'hh': 'text/plain',
+    'hxx': 'text/plain', 'cs': 'text/plain', 'html': 'text/html', 'htm': 'text/html',
+    'css': 'text/css', 'scss': 'text/plain', 'sass': 'text/plain', 'less': 'text/plain',
+    'json': 'application/json', 'xml': 'text/xml', 'yaml': 'text/plain', 'yml': 'text/plain',
+    'toml': 'text/plain', 'ini': 'text/plain', 'cfg': 'text/plain', 'conf': 'text/plain',
+    'sh': 'text/plain', 'bash': 'text/plain', 'zsh': 'text/plain', 'fish': 'text/plain',
+    'ps1': 'text/plain', 'php': 'text/plain', 'rb': 'text/plain', 'go': 'text/plain',
+    'rs': 'text/plain', 'swift': 'text/plain', 'r': 'text/plain', 'sql': 'text/plain',
+    'lua': 'text/plain', 'pl': 'text/plain', 'pm': 'text/plain', 'asm': 'text/plain',
+    's': 'text/plain', 'f90': 'text/plain', 'f95': 'text/plain', 'pas': 'text/plain',
+    'vb': 'text/plain', 'hs': 'text/plain', 'ml': 'text/plain', 'elm': 'text/plain',
+    'dart': 'text/plain', 'jl': 'text/plain', 'md': 'text/markdown', 'markdown': 'text/markdown',
+    'tex': 'text/plain', 'latex': 'text/plain', 'dockerfile': 'text/plain',
+    'makefile': 'text/plain', 'cmake': 'text/plain', 'gradle': 'text/plain',
   };
   
   return ext ? mimeTypeMap[ext] || null : null;
 };
 
-// Helper function to check if a file is a code file
 const isCodeFile = (fileName: string): boolean => {
   return getCodeFileMimeType(fileName) !== null;
 };
 
-// Export helper functions for use in other parts of the system
 export { getCodeFileMimeType, isCodeFile };
 
 const useFileSrc = (file: File | undefined) => {
@@ -220,7 +147,6 @@ const AttachmentThumb: FC = () => {
   const src = useAttachmentSrc();
   const isCode = useAuiState((s) => {
     if (s.attachment.type === "code") return true;
-    // Check file name for code extensions if type isn't already set
     const fileName = s.attachment.name || "";
     return isCodeFile(fileName);
   });
@@ -252,20 +178,14 @@ const AttachmentUI: FC = () => {
     const type = s.attachment.type;
     const fileName = s.attachment.name || "";
     
-    // Check if it's a code file by extension
     const isCode = isCodeFile(fileName);
     
     switch (type) {
-      case "image":
-        return "Image";
-      case "document":
-        return "Document";
-      case "code":
-        return "Code";
-      case "file":
-        return isCode ? "Code" : "File";
-      default:
-        return isCode ? "Code" : type;
+      case "image": return "Image";
+      case "document": return "Document";
+      case "code": return "Code";
+      case "file": return isCode ? "Code" : "File";
+      default: return isCode ? "Code" : type;
     }
   });
 
@@ -332,8 +252,38 @@ export const ComposerAttachments: FC = () => {
 };
 
 export const ComposerAddAttachment: FC = () => {
+  // Use useAui() to get access to actions, instead of useAuiState()
+  const aui = useAui();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    
+    const files = Array.from(e.target.files);
+    for (const file of files) {
+      let fileToProcess = file;
+      
+      // If it's a code file, or the browser defaults to binary octet-stream, force it to text/plain
+      if (isCodeFile(file.name) || file.type === "application/octet-stream" || !file.type) {
+        fileToProcess = new File([file], file.name, { type: "text/plain" });
+      }
+      
+      // Call addAttachment as a method on the composer context
+      aui.composer().addAttachment(fileToProcess);
+    }
+    
+    // Reset the input so users can upload the same file again if they deleted it
+    e.target.value = '';
+  };
+
   return (
-    <ComposerPrimitive.AddAttachment asChild>
+    <>
+      <input 
+        type="file" 
+        id="aui-custom-hidden-file-input" 
+        className="hidden" 
+        multiple 
+        onChange={handleFileChange} 
+      />
       <TooltipIconButton
         tooltip="Add Attachment"
         side="bottom"
@@ -341,10 +291,14 @@ export const ComposerAddAttachment: FC = () => {
         size="icon"
         className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
         aria-label="Add Attachment"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("aui-custom-hidden-file-input")?.click();
+        }}
       >
         <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
       </TooltipIconButton>
-    </ComposerPrimitive.AddAttachment>
+    </>
   );
 };
 
@@ -352,7 +306,6 @@ export const ComposerAddNotes: FC = () => {
   const { notes, addNotesToComposer } = useNotes();
 
   const handleAddNotes = (event: React.MouseEvent) => {
-    // Prevent the click from bubbling up and triggering form submission
     event.preventDefault();
     event.stopPropagation();
     
