@@ -51,6 +51,31 @@
       background-position: -100% 0;
     }
   }
+  
+}
+
+@theme {
+  --animate-shooting-star: shooting-star linear infinite;
+
+  @keyframes shooting-star {
+    0% { 
+      /* Start slightly off-screen to the left */
+      transform: translateX(-10vw) translateY(0) rotate(-45deg) scale(0); 
+      opacity: 0; 
+    }
+    10% {
+      opacity: 1;
+      transform: translateX(0vw) translateY(10vh) rotate(-45deg) scale(1);
+    }
+    90% {
+      opacity: 1;
+    }
+    100% { 
+      /* Shoot across to the right and down */
+      transform: translateX(100vw) translateY(100vh) rotate(-45deg) scale(1); 
+      opacity: 0; 
+    }
+  }
 }
 
 :root {

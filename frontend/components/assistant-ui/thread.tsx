@@ -5,6 +5,7 @@ import {
   UserMessageAttachments,
 } from "@/components/assistant-ui/attachment";
 import { MarkdownText } from "@/components/assistant-ui/markdown-text";
+import { useMemo } from 'react'; // Added useMemo here
 import { Reasoning } from "@/components/assistant-ui/reasoning";
 import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
@@ -13,6 +14,7 @@ import { useReferences } from "@/lib/references-context";
 import { extractReferences } from "@/lib/reference-extractor";
 import { cn } from "@/lib/utils";
 import * as React from "react";
+import logo from "./assets/src/astronaut.png";
 import {
   ActionBarMorePrimitive,
   ActionBarPrimitive,
@@ -44,6 +46,8 @@ import { useHighlights } from "@/components/assistant-ui/use-highlights";
 import type { FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { LoadingDots } from "../ui/loading";
+import Image from 'next/image'
+import FallingStars from "../ui/stars";
 
 export const Thread: FC<{ highlights: ReturnType<typeof useHighlights> }> = ({ highlights }) => {
   return (
@@ -101,23 +105,67 @@ const ThreadScrollToBottom: FC = () => {
   );
 };
 
+
 const ThreadWelcome: FC = () => {
+  const stars = useMemo(() => {
+    return Array.from({ length: 5 }).map((_, i) => ({
+      id: i,
+      // Start them between -10% and 40% of the width (left side)
+      left: `${Math.random() * 50 - 10}%`, 
+      delay: `${Math.random() * 20}s`, 
+      duration: `${Math.random() * 6 + 8}s`, // Slightly slower for a cuter vibe
+      scale: Math.random() * 0.4 + 0.6,
+    }));
+  }, []);
+
   return (
-    <div className="aui-thread-welcome-root mx-auto my-auto flex w-full max-w-(--thread-max-width) grow flex-col">
-      <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
-        <div className="aui-thread-welcome-message flex size-full flex-col justify-center px-4">
-          <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-2xl duration-200">
-            <div className="flex items-center">
-              C<MoonStar className="size-5 pt-1" color="#2a2d79" strokeWidth={3}/>smo Here!
-            </div>
-          </h1>
-          <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-xl delay-75 duration-200">
-            What would you like to learn today?
-          </p>
-        </div>
+    <>
+      {/* Falling Stars Layer */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-[50]">
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            className="absolute top-[-50px] animate-shooting-star"
+            style={{
+              left: star.left,
+              animationDelay: star.delay,
+              animationDuration: star.duration,
+            }}
+          >
+            <span
+              className="text-[#2a2d79] text-2xl opacity-60 drop-shadow-[0_0_10px_rgba(42,45,121,0.4)]"
+              style={{
+                display: 'inline-block',
+                transform: `scale(${star.scale})`,
+              }}
+            >
+              ★
+            </span>
+          </div>
+        ))}
       </div>
-      <ThreadSuggestions />
-    </div>
+
+      {/* Your Existing Content */}
+      <div className="aui-thread-welcome-root mx-auto my-auto flex w-full max-w-(--thread-max-width) grow flex-col relative z-10">
+        <div className="aui-thread-welcome-message flex size-full flex-row items-center justify-start gap-20 px-4">
+          <div className="aui-thread-welcome-message flex flex-col justify-center">
+            <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-bold text-3xl duration-200">
+              <div className="flex items-center">
+                C<MoonStar className="size-6 pt-1" color="#2a2d79" strokeWidth={3} />
+                smo Here!
+              </div>
+            </h1>
+            <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-xl delay-75 duration-200">
+              What would you like to learn today?
+            </p>
+            
+          </div>
+          <Image src={logo} alt="Logo" className="size-20 object-cover" />
+        </div>
+        
+        <ThreadSuggestions />
+      </div>
+    </>
   );
 };
 
