@@ -14,7 +14,7 @@ interface Material {
   type: "pdf" | "website" | "video" | "code";
   name: string;
   url?: string;
-  file?: File;
+  file?: string;
   enabled: boolean;
 }
 
@@ -53,9 +53,13 @@ export async function POST(req: Request) {
       }
     }
     else if (material.type === "code") {
+      const rawBase64 = material.file?.includes(',') 
+        ? material.file.split(',')[1] 
+        : material.file;
+        
       return {
         type: "file",
-        data: material.file,
+        data: rawBase64,
         mediaType: 'text/plain'
       }
     }
