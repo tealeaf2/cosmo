@@ -17,15 +17,13 @@ import { Separator } from "@/components/ui/separator";
 import { MaterialsProvider, useMaterials } from "@/lib/materials-context";
 import { HighlightToggle } from "@/components/ui/highlight";
 import { useHighlights } from "@/components/assistant-ui/use-highlights";
-import { NotesToggle, NotesToggleWithPopup } from "@/components/ui/notes";
+import { NotesToggleWithPopup } from "@/components/ui/notes";
+import { NotesProvider} from "@/lib/notes-context";
 import { ReferencesProvider } from "@/lib/references-context";
-import { useState } from "react";
 
 function AssistantContent() {
   const { getEnabledMaterials } = useMaterials();
   const highlights = useHighlights();
-  const [isNotesOpen, setIsNotesOpen] = useState(false);
-  const [notes, setNotes] = useState<string>("");
   
   const runtime = useChatRuntime({
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
@@ -47,7 +45,7 @@ function AssistantContent() {
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
               <div className="ml-auto flex items-center gap-2">
-                <NotesToggleWithPopup on={isNotesOpen}/>
+                <NotesToggleWithPopup />
                 <HighlightToggle 
                   className="ml-auto"
                   on={highlights.isHighlightMode}
@@ -71,7 +69,9 @@ export const Assistant = () => {
   return (
     <MaterialsProvider>
       <ReferencesProvider>
-        <AssistantContent />
+        <NotesProvider>
+          <AssistantContent />
+        </NotesProvider>
       </ReferencesProvider>
     </MaterialsProvider>
   );

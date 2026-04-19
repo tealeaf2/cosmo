@@ -1,7 +1,7 @@
 "use client";
 
 import { PropsWithChildren, useEffect, useState, type FC } from "react";
-import { XIcon, PlusIcon, FileText } from "lucide-react";
+import { XIcon, PlusIcon, FileText, NotepadText } from "lucide-react";
 import {
   AttachmentPrimitive,
   ComposerPrimitive,
@@ -24,7 +24,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
-import { NotepadText } from 'lucide-react';
+import { useNotes } from "@/lib/notes-context";
 
 
 const useFileSrc = (file: File | undefined) => {
@@ -223,41 +223,32 @@ export const ComposerAddAttachment: FC = () => {
   );
 };
 
-interface ComposerAddNotesProps {
-  noteContent: string; // Pass the content from your Notepad state
-}
+export const ComposerAddNotes: FC = () => {
+  const { notes, addNotesToComposer } = useNotes();
 
-export const ComposerAddNotes: FC<ComposerAddNotesProps> = ({ noteContent }) => {
-  const [Content, setNoteContent] = useState("")
-  // Access the composer's internal "add attachment" function to add the notepad content as a text file attachment
-  const aui = useAui();
-
-  const handleAttachNotepad = () => {
-    if (!noteContent) {
-      alert("Notepad is empty!");
+  const handleAddNotes = (event: React.MouseEvent) => {
+    // Prevent the click from bubbling up and triggering form submission
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (notes.trim().length === 0) {
       return;
     }
-    setNoteContent(noteContent);
-
-    const blob = new Blob([noteContent], { type: "text/plain" });
-
-    //Convert Blob to a standard File object
-    const file = new File([blob], "notes.txt", { type: "text/plain" });
-
-    aui.composer().addAttachment(file);
+    addNotesToComposer();
   };
 
   return (
     <TooltipIconButton
-      tooltip="Attach Notepad"
+      tooltip={notes.trim().length > 0 ? "Add Notes to Message" : "No notes to add"}
       side="bottom"
       variant="ghost"
       size="icon"
-      onClick={handleAttachNotepad} // Use onClick instead of asChild trigger
-      className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
-      aria-label="Attach Notepad"
+      onClick={handleAddNotes} 
+      disabled={notes.trim().length === 0}
+      className="aui-composer-add-notes size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30 disabled:opacity-50 disabled:cursor-not-allowed"
+      aria-label="Add Notes to Message"
     >
-      <NotepadText className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
+      <NotepadText className="aui-notes-add-icon size-5 stroke-[1.5px]" />
     </TooltipIconButton>
   );
 };
